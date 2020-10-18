@@ -19,13 +19,13 @@ describe("CloudSeeding", function () {
 
     it("Can't play if cannot reduce MC production", function () { 
         maxOutOceans(player, game, 3);
-        player.setProduction(Resources.MEGACREDITS, -5);
+        player.addProduction(Resources.MEGACREDITS, -5);
         expect(card.canPlay(player, game)).to.eq(false);
     });
 
     it("Can't play if ocean requirements not met", function () { 
         maxOutOceans(player, game, 2);
-        player.setProduction(Resources.HEAT);
+        player.addProduction(Resources.HEAT);
         expect(card.canPlay(player, game)).to.eq(false);
     });
 
@@ -36,7 +36,7 @@ describe("CloudSeeding", function () {
 
     it("Should play - auto select if single target", function () {
         // Meet requirements
-        player2.setProduction(Resources.HEAT);
+        player2.addProduction(Resources.HEAT);
         maxOutOceans(player, game, 3);
         expect(card.canPlay(player, game)).to.eq(true);
         
@@ -44,19 +44,21 @@ describe("CloudSeeding", function () {
         expect(player.getProduction(Resources.MEGACREDITS)).to.eq(-1);
         expect(player.getProduction(Resources.PLANTS)).to.eq(2);
 
-        expect(game.interrupts.length).to.eq(0);
+        game.interrupts[0].generatePlayerInput?.();
+        expect(game.interrupts[0].playerInput).to.eq(undefined);
         expect(player2.getProduction(Resources.HEAT)).to.eq(0);
     });
 
     it("Should play - multiple targets", function () {
-        player.setProduction(Resources.HEAT);
-        player2.setProduction(Resources.HEAT);
+        player.addProduction(Resources.HEAT);
+        player2.addProduction(Resources.HEAT);
         
         card.play(player, game);
         expect(player.getProduction(Resources.MEGACREDITS)).to.eq(-1);
         expect(player.getProduction(Resources.PLANTS)).to.eq(2);
 
         expect(game.interrupts.length).to.eq(1);
+        game.interrupts[0].generatePlayerInput?.();
         const selectPlayer = game.interrupts[0].playerInput as SelectPlayer;
         selectPlayer.cb(player2);
         expect(player2.getProduction(Resources.HEAT)).to.eq(0);

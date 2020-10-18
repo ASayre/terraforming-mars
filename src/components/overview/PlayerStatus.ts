@@ -1,26 +1,35 @@
 import Vue from "vue";
 import { ActionLabel } from "./ActionLabel";
-import { PlayerModel } from "../../models/PlayerModel";
+import { range } from "../../utils/utils"; 
+import { Button } from "../common/Button";
 
-const isPinned = (root: any, player: PlayerModel): boolean => {
-    return (root as any).getVisibilityState("pinned_player_" + player.id);
+
+const isPinned = (root: any, playerIndex: string): boolean => {
+    return (root as any).getVisibilityState("pinned_player_" + playerIndex);
 };
-const showPlayerData = (root: any, player: PlayerModel) => {
-    (root as any).setVisibilityState("pinned_player_" + player.id, true);
-    (root as any).setVisibilityState("other_player_" + player.id, true);
+const showPlayerData = (root: any, playerIndex: string) => {
+    (root as any).setVisibilityState("pinned_player_" + playerIndex, true);
 };
-export const hidePlayerData = (root: any, player: PlayerModel) => {
-    (root as any).setVisibilityState("pinned_player_" + player.id, false);
-    (root as any).setVisibilityState("other_player_" + player.id, false);
+export const hidePlayerData = (root: any, playerIndex: string) => {
+    (root as any).setVisibilityState("pinned_player_" + playerIndex, false);
 };
 
 export const PlayerStatus = Vue.component("player-status", {
-    props: ["player", "activePlayer", "firstForGen", "actionLabel"],
+    props: [
+        "player",
+        "activePlayer",
+        "firstForGen",
+        "actionLabel",
+        "playerIndex",
+    ],
+    components: {
+        "Button": Button
+    },
     methods: {
         togglePlayerDetails: function () {
             // for active player => scroll to cards UI
-            if (this.player.id === this.activePlayer.id) {
-                let el: HTMLElement = document.getElementsByClassName(
+            if (this.player.color === this.activePlayer.color) {
+                const el: HTMLElement = document.getElementsByClassName(
                     "preferences_icon--cards"
                 )[0] as HTMLElement;
                 el.click();
@@ -34,7 +43,7 @@ export const PlayerStatus = Vue.component("player-status", {
             return this.actionLabel !== ActionLabel.NONE;
         },
         getLabelClasses: function (): string {
-            let classes = [];
+            const classes = [];
             const baseClass = "player-action-status";
             classes.push(baseClass);
             if (this.actionLabel === ActionLabel.PASSED) {
@@ -45,7 +54,7 @@ export const PlayerStatus = Vue.component("player-status", {
             return classes.join(" ");
         },
         getPlayerNameClasses: function (): string {
-            let classes = [];
+            const classes = [];
             const baseClass = "player-name";
             classes.push(baseClass);
             if (this.player.id === this.activePlayer.id) {
@@ -57,32 +66,25 @@ export const PlayerStatus = Vue.component("player-status", {
             return this.player.playedCards.length;
         },
         pinPlayer: function () {
-            const player = this.player;
-            const players = this.activePlayer.players;
+            let hiddenPlayersIndexes: Array<Number> = [];
+            const playerPinned = isPinned(this.$root, this.playerIndex);
 
-            let hiddenPlayers: Array<PlayerModel> = [];
-            let playerPinned = isPinned(this.$root, player);
-
-            // if player is already pinned, on unpin add to hidden players
-            if (playerPinned) {
-                hiddenPlayers = players;
-            } else {
-                showPlayerData(this.$root, player);
-
-                for (i = 0; i < players.length; i++) {
-                    let p = players[i];
-                    if (p.id === this.activePlayer.id || player.id !== p.id) {
-                        hiddenPlayers.push(p);
-                    }
-                }
+            // if player is already pinned, add to hidden players (toggle)
+            hiddenPlayersIndexes = range(this.activePlayer.players.length - 1);
+            if (!playerPinned) {
+                showPlayerData(this.$root, this.playerIndex);
+                hiddenPlayersIndexes = hiddenPlayersIndexes.filter(
+                    (index) => index !== this.playerIndex
+                );
             }
-
-            for (var i = 0; i < hiddenPlayers.length; i++) {
-                hidePlayerData(this.$root, hiddenPlayers[i]);
+            for (let i = 0; i < hiddenPlayersIndexes.length; i++) {
+                if (hiddenPlayersIndexes.includes(i)) {
+                    hidePlayerData(this.$root, i.toString());
+                }
             }
         },
         buttonLabel: function (): string {
-            return isPinned(this.$root, this.player) ? "hide" : "show";
+            return isPinned(this.$root, this.playerIndex) ? "hide" : "show";
         },
     },
     template: `
@@ -103,8 +105,8 @@ export const PlayerStatus = Vue.component("player-status", {
                         <div class="played-cards-icon" />
                     </div>
                     <div class="played-cards-count">{{ getNrPlayedCards() }}</div>
-                </div>
-                <button class="played-cards-show btn" v-on:click.prevent="togglePlayerDetails()">{{ buttonLabel()}}</button>
+                </div> 
+                <Button size="tiny" :onClick="togglePlayerDetails" :title="buttonLabel()" />
             </div>
         </div>
     `,

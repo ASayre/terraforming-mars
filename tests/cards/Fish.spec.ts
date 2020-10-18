@@ -27,24 +27,26 @@ describe("Fish", function () {
 
     it("Should play - auto select if single target", function () {
         (game as any).temperature = 2;
-        player2.setProduction(Resources.PLANTS);
+        player2.addProduction(Resources.PLANTS);
 
         expect(card.canPlay(player, game)).to.eq(true);
         card.play(player, game);
 
-        expect(game.interrupts.length).to.eq(0);
+        game.interrupts[0].generatePlayerInput?.();
+        expect(game.interrupts[0].playerInput).to.eq(undefined);
         expect(player2.getProduction(Resources.PLANTS)).to.eq(0);
     });
 
     it("Should play - multiple targets", function () {
         (game as any).temperature = 2;
-        player.setProduction(Resources.PLANTS);
-        player2.setProduction(Resources.PLANTS);
+        player.addProduction(Resources.PLANTS);
+        player2.addProduction(Resources.PLANTS);
 
         expect(card.canPlay(player, game)).to.eq(true);
         card.play(player, game);
 
         expect(game.interrupts.length).to.eq(1);
+        game.interrupts[0].generatePlayerInput?.();
         const selectPlayer = game.interrupts[0].playerInput as SelectPlayer;
         selectPlayer.cb(player2);
         expect(player2.getProduction(Resources.PLANTS)).to.eq(0);

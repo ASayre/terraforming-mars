@@ -21,24 +21,26 @@ describe("GreatEscarpmentConsortium", function () {
     });
 
     it("Can play if player has steel production", function () {
-        player.setProduction(Resources.STEEL);
+        player.addProduction(Resources.STEEL);
         expect(card.canPlay(player)).to.eq(true);
     });
     
     it("Should play - auto select if single target", function () {
-        player.setProduction(Resources.STEEL);
+        player.addProduction(Resources.STEEL);
         card.play(player, game); // can decrease own production
-        expect(game.interrupts.length).to.eq(0);
+        game.interrupts[0].generatePlayerInput?.();
+        expect(game.interrupts[0].playerInput).to.eq(undefined);
         expect(player.getProduction(Resources.STEEL)).to.eq(1);
     });
 
     it("Should play - multiple targets", function () {
-        player.setProduction(Resources.STEEL);
-        player2.setProduction(Resources.STEEL);
+        player.addProduction(Resources.STEEL);
+        player2.addProduction(Resources.STEEL);
         card.play(player, game);
         expect(player.getProduction(Resources.STEEL)).to.eq(2);
 
         expect(game.interrupts.length).to.eq(1);
+        game.interrupts[0].generatePlayerInput?.();
         const selectPlayer = game.interrupts[0].playerInput as SelectPlayer;
         selectPlayer.cb(player2);
         expect(player2.getProduction(Resources.STEEL)).to.eq(0);

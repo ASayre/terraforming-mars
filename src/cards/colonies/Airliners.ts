@@ -1,11 +1,11 @@
 import { IProjectCard } from "../IProjectCard";
 import { Tags } from "../Tags";
-import { CardType } from '../CardType';
+import { CardType } from "../CardType";
 import { Player } from "../../Player";
-import { CardName } from '../../CardName';
+import { CardName } from "../../CardName";
 import { Resources } from "../../Resources";
-import { ResourceType } from '../../ResourceType';
-import { Game } from '../../Game';
+import { ResourceType } from "../../ResourceType";
+import { Game } from "../../Game";
 
 export class Airliners implements IProjectCard {
     public cost: number = 11;
@@ -18,8 +18,8 @@ export class Airliners implements IProjectCard {
     }
 
     public play(player: Player, game: Game) {
-      player.setProduction(Resources.MEGACREDITS, 2);
-      game.addResourceInterrupt(player, ResourceType.FLOATER, 2, undefined);
+      player.addProduction(Resources.MEGACREDITS, 2);
+      game.addResourceInterrupt(player, ResourceType.FLOATER, 2);
       return undefined;
     }
     public getVictoryPoints() {

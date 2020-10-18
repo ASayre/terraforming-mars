@@ -24,13 +24,14 @@ describe("Birds", function () {
         const player3 = new Player("safe", Color.RED, false);
         const game = new Game("foobar", [player, player2, player3], player);
 
-        player2.setProduction(Resources.PLANTS,2);
-        player3.setProduction(Resources.PLANTS,7);
+        player2.addProduction(Resources.PLANTS,2);
+        player3.addProduction(Resources.PLANTS,7);
         (game as any).oxygenLevel = 13;
         expect(card.canPlay(player, game)).to.eq(true);
 
         card.play(player, game);
         expect(game.interrupts.length).to.eq(1);
+        game.interrupts[0].generatePlayerInput?.();
         const selectPlayer = game.interrupts[0].playerInput as SelectPlayer;
         selectPlayer.cb(player2);
 

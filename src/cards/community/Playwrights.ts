@@ -1,7 +1,7 @@
 import { CorporationCard } from "../corporation/CorporationCard";
 import { Player } from "../../Player";
 import { Tags } from "../Tags";
-import { CardName } from '../../CardName';
+import { CardName } from "../../CardName";
 import { CardType } from "../CardType";
 import { Game } from "../../Game";
 import { IProjectCard } from "../IProjectCard";
@@ -14,9 +14,10 @@ export class Playwrights implements CorporationCard {
     public name: CardName =  CardName.PLAYWRIGHTS;
     public tags: Array<Tags> = [Tags.ENERGY];
     public startingMegaCredits: number = 38;
-
+    public cardType: CardType = CardType.CORPORATION;
+    
     public play(player: Player) {
-        player.setProduction(Resources.ENERGY);
+        player.addProduction(Resources.ENERGY);
         return undefined;
     }
 
@@ -45,13 +46,12 @@ export class Playwrights implements CorporationCard {
 
                 const removedCard = player.playedCards.pop() as IProjectCard;
                 player.removedFromPlayCards.push(removedCard); // Remove card from play
-              
                 return undefined;
             }
         );
     }
 
-    private getReplayableEvents(player: Player, game: Game) {
+    private getReplayableEvents(player: Player, game: Game): Array<IProjectCard> {
         const players = game.getPlayers();
         let playedEvents : IProjectCard[] = [];
 
@@ -63,8 +63,7 @@ export class Playwrights implements CorporationCard {
             const card = getProjectCardByName(e.name)!;
             const cost = player.getCardCost(game, card);
             const canAffordCard = player.canAfford(cost);
-            const canPlayCard = card.canPlay === undefined || (card.canPlay !== undefined && card.canPlay(player, game));
-            
+            const canPlayCard = card.canPlay === undefined || card.canPlay(player, game);
             return canAffordCard && canPlayCard;
         });
 

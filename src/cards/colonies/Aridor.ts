@@ -16,17 +16,23 @@ export class Aridor implements CorporationCard {
     public tags: Array<Tags> = [];
     public startingMegaCredits: number = 40;
     public allTags = new Set();
+    public cardType: CardType = CardType.CORPORATION;
+
 
     public initialAction(player: Player, game: Game) {
         if (game.colonyDealer === undefined || !game.gameOptions.coloniesExtension) return undefined;
-        let coloniesModel: Array<ColonyModel> = game.getColoniesModel(game.colonyDealer.discardedColonies);
+        
+        const availableColonies: IColony[] = game.colonyDealer.discardedColonies;
+        if (availableColonies.length === 0) return undefined;
+        
+        let coloniesModel: Array<ColonyModel> = game.getColoniesModel(availableColonies);
         let selectColony = new SelectColony("Aridor first action - Select colony tile to add", "Add colony tile", coloniesModel, (colonyName: ColonyName) => {
             if (game.colonyDealer !== undefined) {
-                game.colonyDealer.discardedColonies.forEach(colony => {
+                availableColonies.forEach(colony => {
                     if (colony.name === colonyName) {
                       game.colonies.push(colony);
                       game.colonies.sort((a,b) => (a.name > b.name) ? 1 : -1);
-                      game.newLog("${0} added a new Colony tile: ${1}", b => b.player(player).colony(colony));
+                      game.log("${0} added a new Colony tile: ${1}", b => b.player(player).colony(colony));
                       this.checkActivation(colony, game);
                       return undefined;
                     }
@@ -61,7 +67,7 @@ export class Aridor implements CorporationCard {
             let currentSize = this.allTags.size;
             this.allTags.add(tag);
             if (this.allTags.size > currentSize) {
-                player.setProduction(Resources.MEGACREDITS);
+                player.addProduction(Resources.MEGACREDITS);
             }
         }
         return undefined;

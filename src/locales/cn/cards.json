@@ -341,8 +341,7 @@
     "Gain 1 MC for each event EVER PLAYED by all players.": "所有玩家合计每打出过1个事件,你获得1MC",
 
     "Open City": "开放的城市",
-    "Requires 12% oxygen. Gain 2 plants. Place a City tile.": "需要氧气浓度达到12%,获得2个植物资源,放置一个城市版块",
-    "Decrease your Energy production 1 step and increase your MC production 4 steps.": "降低你的电力产能1级并增加你的MC产能4级",
+    "Requires 12% oxygen. Gain 2 plants. Place a City tile. Decrease your Energy production 1 step and increase your MC production 4 steps.": "需要氧气浓度达到12%,获得2个植物资源,放置一个城市版块。降低你的电力产能1级并增加你的MC产能4级。",
 
     "Media Group": "媒体团队",
     "Effect: After you play an event card, you gain 3MC.": "效果: 每当你打出一张事件牌后,获得3MC.",
@@ -552,7 +551,7 @@
   "Increase your MC production 2 steps. Place on a greenery tile ON AN AREA RESERVED FOR OCEAN, disregarding normal placement restrictions, and increase oxygen 1 step.": "MC产量+2 放置一块绿植板块到1格海洋保留区上",
 
   "Satellites": "卫星",
-  "Increase your MC production 1 step for each space tag your have, including this one.": "MC产量+n，n=你的太空图标数（包括此牌）",
+  "Increase your MC production 1 step for each space tag you have, including this one.": "MC产量+n，n=你的太空图标数（包括此牌）",
 
   "Noctis Farming": "诺提斯农耕",
   "Requires -20 C or warmer. Increase your MC production 1 step and gain 2 Plants.": "（需求：温度≥-20℃） MC产量+1 获得2枚植物资源",

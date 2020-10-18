@@ -1,11 +1,11 @@
 import { IProjectCard } from "../IProjectCard";
 import { Tags } from "../Tags";
-import { CardType } from '../CardType';
+import { CardType } from "../CardType";
 import { Player } from "../../Player";
-import { CardName } from '../../CardName';
+import { CardName } from "../../CardName";
 import { Resources } from "../../Resources";
-import { Game } from '../../Game';
-import { ResourceType } from '../../ResourceType';
+import { Game } from "../../Game";
+import { ResourceType } from "../../ResourceType";
 import { LogHelper } from "../../components/LogHelper";
 
 export class UrbanDecomposers implements IProjectCard {
@@ -23,7 +23,7 @@ export class UrbanDecomposers implements IProjectCard {
     }
 
     public play(player: Player, game: Game) {
-        player.setProduction(Resources.PLANTS, 1);
+        player.addProduction(Resources.PLANTS, 1);
 
         const microbeCards = player.getResourceCards(ResourceType.MICROBE);
 
@@ -31,7 +31,7 @@ export class UrbanDecomposers implements IProjectCard {
             player.addResourceTo(microbeCards[0], 2);
             LogHelper.logAddResource(game, player, microbeCards[0], 2);
         } else if (microbeCards.length > 1) {
-            game.addResourceInterrupt(player, ResourceType.MICROBE, 2, undefined);
+            game.addResourceInterrupt(player, ResourceType.MICROBE, 2);
         }
 
         return undefined;

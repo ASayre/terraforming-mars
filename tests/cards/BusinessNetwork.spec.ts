@@ -23,7 +23,7 @@ describe("BusinessNetwork", function () {
     });
 
     it("Can't play", function () {  
-        player.setProduction(Resources.MEGACREDITS,-5);
+        player.addProduction(Resources.MEGACREDITS,-5);
         expect(card.canPlay(player)).to.eq(false);
     });
 
@@ -53,6 +53,7 @@ describe("BusinessNetwork", function () {
 
         player.megaCredits = 3;
         (action as SelectCard<IProjectCard>).cb([(action as SelectCard<IProjectCard>).cards[0]]);
+        game.runNextInterrupt(() => {});
         expect(player.megaCredits).to.eq(0);
         expect(player.cardsInHand.length).to.eq(1);
     });

@@ -17,11 +17,13 @@ import { ISpace } from "../src/ISpace";
 import { ResearchNetwork } from "../src/cards/prelude/ResearchNetwork";
 import { ArcticAlgae } from "../src/cards/ArcticAlgae";
 import { Ecologist } from "../src/milestones/Ecologist";
-import { Dealer } from "../src/Dealer";
+import { Dealer, getProjectCardByName } from "../src/Dealer";
 import { OrOptions } from "../src/inputs/OrOptions";
 import { BoardName } from "../src/BoardName";
 import { SpaceType } from "../src/SpaceType";
 import { Helion } from "../src/cards/corporation/Helion";
+import { COMMUNITY_CARD_MANIFEST } from "../src/cards/community/CommunityCardManifest";
+import { CardName } from "../src/CardName";
 
 describe("Game", function () {
     it("should initialize with right defaults", function () {
@@ -40,6 +42,17 @@ describe("Game", function () {
         // exclude corporate era
         const dealer2 = new Dealer(false, false, false, false, false, false);
         expect(dealer2.getDeckSize()).to.eq(137);
+    });
+
+    it("excludes expansion-specific preludes if those expansions are not selected ", function() {
+        const dealer = new Dealer(true, false, false, false, false, false, true);
+        const preludeDeck = dealer.preludeDeck;
+
+        const turmoilPreludes = COMMUNITY_CARD_MANIFEST.preludeCards.cards.map((c) => c.cardName);
+        turmoilPreludes.forEach((preludeName) => {
+            const preludeCard = getProjectCardByName(preludeName)!;
+            expect(preludeDeck.includes(preludeCard)).to.eq(false)
+        });
     });
 
     it("sets starting production if corporate era not selected", function() {
@@ -77,10 +90,10 @@ describe("Game", function () {
         game.fundAward(player, award);
 
         // Set second player to win Banker award
-        player2.setProduction(Resources.MEGACREDITS,10);
+        player2.addProduction(Resources.MEGACREDITS,10);
   
         // Our testing player will be 2nd Banker in the game
-        player.setProduction(Resources.MEGACREDITS,7);
+        player.addProduction(Resources.MEGACREDITS,7);
 
         // Two other players will share Thermalist award
         award = new Thermalist();
@@ -387,5 +400,24 @@ describe("Game", function () {
 
         expect(prevMilestones).to.not.eq(milestones)
         expect(prevAwards).to.not.eq(awards)
+    });
+
+
+    it("specifically-requested corps override expansion corps", function() {
+        const player = new Player("test", Color.BLUE, false);
+        const player2 = new Player("test2", Color.RED, false);
+        const corpsFromTurmoil = [
+            CardName.LAKEFRONT_RESORTS,
+            CardName.PRISTAR,
+            CardName.TERRALABS_RESEARCH,
+            CardName.UTOPIA_INVEST
+        ]
+        const gameOptions = setCustomGameOptions({customCorporationsList: corpsFromTurmoil, turmoilExtension: false}) as GameOptions;
+        new Game("foobar", [player, player2], player, gameOptions);
+
+        const corpsAssignedToPlayers =
+            [...player.dealtCorporationCards, ...player2.dealtCorporationCards].map(c => c.name);
+
+        expect(corpsAssignedToPlayers).has.members(corpsFromTurmoil);
     });
 });

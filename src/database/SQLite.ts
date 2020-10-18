@@ -21,15 +21,15 @@ export class SQLite implements IDatabase {
     }
 
     getClonableGames( cb:(err: any, allGames:Array<IGameData>)=> void) {
-        var allGames:Array<IGameData> = [];
-        var sql = "SELECT distinct game_id game_id, players players FROM games WHERE save_id = 0 order by game_id asc";
+        const allGames:Array<IGameData> = [];
+        const sql = "SELECT distinct game_id game_id, players players FROM games WHERE save_id = 0 order by game_id asc";
   
         this.db.all(sql, [], (err, rows) => {
             if (rows) {
                 rows.forEach((row) => {
-                    let gameId:string = row.game_id;
-                    let playerCount: number = row.players;
-                    let gameData:IGameData = {
+                    const gameId:string = row.game_id;
+                    const playerCount: number = row.players;
+                    const gameData:IGameData = {
                         gameId,
                         playerCount
                     };
@@ -41,8 +41,8 @@ export class SQLite implements IDatabase {
     }  
 
     getGames(cb:(err: any, allGames:Array<string>)=> void) {
-        var allGames:Array<string> = [];
-        var sql: string = "SELECT distinct game_id game_id FROM games WHERE status = 'running' and save_id > 0"; 
+        const allGames:Array<string> = [];
+        const sql: string = "SELECT distinct game_id game_id FROM games WHERE status = 'running' and save_id > 0"; 
         this.db.all(sql, [], (err, rows) => {
             if (rows) {
                 rows.forEach((row) => {
@@ -60,7 +60,7 @@ export class SQLite implements IDatabase {
                 return cb(new Error("Game not found"));
             }
             // Transform string to json
-            let gameToRestore = JSON.parse(row.game);
+            const gameToRestore = JSON.parse(row.game);
 
             // Rebuild each objects
             game.loadFromJSON(gameToRestore);
@@ -80,7 +80,7 @@ export class SQLite implements IDatabase {
                 return cb(err);
             }
             // Transform string to json
-            let gameToRestore = JSON.parse(row.game);
+            const gameToRestore = JSON.parse(row.game);
 
             // Rebuild each objects
             game.loadFromJSON(gameToRestore);
@@ -102,13 +102,14 @@ export class SQLite implements IDatabase {
             return console.warn(err.message);  
             }
         });
-        // Purge unfinished games older than 10 days
-        this.db.run("DELETE FROM games WHERE created_time < strftime('%s',date('now', '-10 day')) and status = 'running'", function(err: { message: any; }) {
-            if (err) {
-            return console.warn(err.message);  
-            }
-        });        
-
+        // Purge unfinished games older than MAX_GAME_DAYS days. If this .env variable is not present, unfinished games will not be purged.
+        if (process.env.MAX_GAME_DAYS) {
+            this.db.run("DELETE FROM games WHERE created_time < strftime('%s',date('now', '-? day')) and status = 'running'", [process.env.MAX_GAME_DAYS], function(err: { message: any; }) {
+                if (err) {
+                return console.warn(err.message);  
+                }
+            });  
+        }
     }
 
     restoreGame(game_id: string, save_id: number, game: Game): void {
@@ -118,7 +119,7 @@ export class SQLite implements IDatabase {
                 return console.error(err.message);
             }
             // Transform string to json
-            let gameToRestore = JSON.parse(row.game);
+            const gameToRestore = JSON.parse(row.game);
 
             // Rebuild each objects
             game.loadFromJSON(gameToRestore);

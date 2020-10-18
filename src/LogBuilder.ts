@@ -30,14 +30,19 @@ export class LogBuilder {
         this.parameters.push(new LogMessageData(LogMessageDataType.STRING, value));
         return this;
     }
+    
+    public raw_string(value: string): LogBuilder {
+        this.parameters.push(new LogMessageData(LogMessageDataType.RAW_STRING, value));
+        return this;
+    }
 
     public number(value: number): LogBuilder {
-        this.parameters.push(new LogMessageData(LogMessageDataType.STRING, value.toString()));
+        this.parameters.push(new LogMessageData(LogMessageDataType.RAW_STRING, value.toString()));
         return this;
     }
 
     public player(value: Player): LogBuilder {
-        return this.playerId(value.id);
+        return this.playerId(value.color);
     }
 
     public playerId(value: string): LogBuilder {
@@ -65,7 +70,7 @@ export class LogBuilder {
     }
 
     public colony(value: IColony): LogBuilder {
-        this.parameters.push(new LogMessageData(LogMessageDataType.MILESTONE, value.name));
+        this.parameters.push(new LogMessageData(LogMessageDataType.COLONY, value.name));
         return this;
     }
 

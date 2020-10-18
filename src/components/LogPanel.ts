@@ -5,19 +5,20 @@ import { LogMessage } from "../LogMessage";
 import { LogMessageType } from "../LogMessageType";
 import { LogMessageData } from "../LogMessageData";
 import { LogMessageDataType } from "../LogMessageDataType";
-import { Card } from "./Card";
+import { Card } from "./card/Card";
 import { $t } from "../directives/i18n";
 import { getProjectCardByName } from "./../Dealer";
 
 export const LogPanel = Vue.component("log-panel", {
-    props: ["messages", "players"],
+    props: ["id", "players"],
     data: function () {
         return {
             cards: new Array<string>(),
+            messages: new Array<LogMessage>()
         }
     },
     components: {
-        "card": Card,
+        Card,
     },
     methods: {
         scrollToEnd: function() { 
@@ -27,45 +28,55 @@ export const LogPanel = Vue.component("log-panel", {
             }
         },
         parseCardType: function(cardType: CardType, cardName: string) {
+            cardName = $t(cardName);
+            const suffixFreeCardName = cardName.split(":")[0];
+            let className = undefined;
             if (cardType === CardType.EVENT) {
-                return "<log-card class=\"background-color-events\">"+cardName+"</log-card>";
+                className="background-color-events";
             } else if (cardType === CardType.ACTIVE) {
-                return "<log-card class=\"background-color-active\">"+cardName+"</log-card>";
+                className="background-color-active";
             } else if (cardType === CardType.AUTOMATED) {
-                return "<log-card class=\"background-color-automated\">"+cardName+"</log-card>";
+                className="background-color-automated";
             } else if (cardType === CardType.PRELUDE) {
-                return "<log-card class=\"background-color-prelude\">"+cardName+"</log-card>";
+                className="background-color-prelude";
+            }
+
+            if (className === undefined) {
+                return suffixFreeCardName;
             } else {
-                return cardName;
+                return "<log-card class=\""+ className + "\">" + suffixFreeCardName + "</log-card>";
             }
         },
         parseData: function(data: LogMessageData) {
             const translatableMessageDataTypes = [
+                LogMessageDataType.STRING,
                 LogMessageDataType.STANDARD_PROJECT,
                 LogMessageDataType.MILESTONE,
-                LogMessageDataType.AWARD
+                LogMessageDataType.AWARD,
+                LogMessageDataType.COLONY,
+                LogMessageDataType.PARTY
             ];
             if (data.type !== undefined && data.value !== undefined) {
                 if (data.type === LogMessageDataType.PLAYER) {
-                    for (let player of this.players) {
-                        if (data.value === player.id) {
+                    for (const player of this.players) {
+                        if (data.value === player.color || data.value === player.id) {
                             return "<log-player class=\"player_bg_color_"+player.color+"\">"+player.name+"</log-player>";
                         }
                     }
                 } else if (data.type === LogMessageDataType.CARD) {
-                    for (let player of this.players) {
+                    for (const player of this.players) {
                         if (player.corporationCard !== undefined && data.value === player.corporationCard.name) {
-                            return "<log-card class=\"background-color-corporation\">"+data.value+"</log-card>";
+                            return "<log-card class=\"background-color-corporation\">" + $t(data.value) + "</log-card>";
                         } else {
-                            let cards = player.playedCards.concat(player.selfReplicatingRobotsCards);
-                            for (let card of cards) {
+                            const cards = player.playedCards.concat(player.selfReplicatingRobotsCards);
+                            for (const card of cards) {
                                 if (data.value === card.name && card.cardType !== undefined) {
                                     return this.parseCardType(card.cardType, data.value);
                                 }
                             }
                         }
                     }
-                    let card = getProjectCardByName(data.value)
+                    const card = getProjectCardByName(data.value)
                     if (card && card.cardType) return this.parseCardType(card.cardType, data.value);
                 } else if (translatableMessageDataTypes.includes(data.type)) {
                     return $t(data.value);
@@ -84,7 +95,7 @@ export const LogPanel = Vue.component("log-panel", {
                 if (message.data === undefined) {
                     return `BUG: Unparseable message: ${message.message}`;
                 }
-                var data = message.data.map(datum => {
+                const data = message.data.map(datum => {
                     return (datum === undefined)
                         ? "undefined"
                         : ("(" + datum.type + ") " + datum.value)
@@ -96,7 +107,7 @@ export const LogPanel = Vue.component("log-panel", {
         },
         parseMessage: function(message: LogMessage) {
             try {
-                let logEntryBullet = (this.isNewGeneration(message.type)) ? "" : `<span title="${new Date(message.timestamp).toLocaleString()}">&#x1f551;</span>`;
+                const logEntryBullet = (this.isNewGeneration(message.type)) ? "" : `<span title="${new Date(message.timestamp).toLocaleString()}">&#x1f551;</span>`;
                 if (message.type !== undefined && message.message !== undefined) {
                     message.message = $t(message.message);
                     return logEntryBullet+message.message.replace(/\$\{([0-9]{1})\}/gi, (_match, idx) => {
@@ -112,12 +123,12 @@ export const LogPanel = Vue.component("log-panel", {
             return (type === LogMessageType.NEW_GENERATION);
         },
         cardClicked: function (message: LogMessage) {
-            let datas = message.data;
+            const datas = message.data;
             datas.forEach((data: LogMessageData) => {
                 if (data.type !== undefined && data.value !== undefined) {
                     if (data.type === LogMessageDataType.CARD) {
-                        let card_name = data.value;
-                        var index = this.cards.indexOf(card_name);
+                        const card_name = data.value;
+                        const index = this.cards.indexOf(card_name);
                         if (index === -1) {
                             this.cards.push(card_name);
                         } else {
@@ -130,9 +141,21 @@ export const LogPanel = Vue.component("log-panel", {
         hideMe: function () {
             this.cards = new Array<string>();
         },
+        getCrossHtml: function() {
+            return "<i class='icon icon-cross' /i>";
+        }
     },
     mounted: function () {
-        this.$nextTick(this.scrollToEnd);
+        fetch(`/api/game/logs?id=${this.id}&limit=50`)
+            .then((response) => response.json())
+            .then((messages) => {
+                this.messages.splice(0, this.messages.length);
+                this.messages.push(...messages);
+                this.$nextTick(this.scrollToEnd);
+            })
+            .catch((error) => {
+                console.error("error updating messages", error);
+            });
     },
     template: `
     <div>
@@ -144,9 +167,9 @@ export const LogPanel = Vue.component("log-panel", {
             </div>
         </div>
         <div class="card-panel" v-if="cards.length > 0">
-            <button class="btn btn-sm btn-error other_player_close" v-on:click="hideMe()"><i class="icon icon-cross"></i></button>
+            <Button size="big" type="close" :disableOnServerBusy="false" :onClick="hideMe" align="right"/>
             <div id="log_panel_card" class="cardbox" v-for="(card, index) in cards" :key="index">
-                <card :card="{name: card}"></card>
+                <Card :card="{name: card}"/>
             </div>
         </div>
     </div>

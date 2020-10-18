@@ -16,7 +16,7 @@ describe("BiomassCombustors", function () {
     });
 
     it("Cannot play if oxygen requirement not met", function () {
-        player2.setProduction(Resources.PLANTS, 1);
+        player2.addProduction(Resources.PLANTS, 1);
         expect(card.canPlay(player, game)).to.eq(false);
     });
 
@@ -33,11 +33,12 @@ describe("BiomassCombustors", function () {
 
     it("Should play", function () {
         (game as any).oxygenLevel = 6;
-        player2.setProduction(Resources.PLANTS, 1);
+        player2.addProduction(Resources.PLANTS, 1);
         expect(card.canPlay(player, game)).to.eq(true);
 
         card.play(player, game);
-        expect(game.interrupts.length).to.eq(0);
+        game.interrupts[0].generatePlayerInput?.();
+        expect(game.interrupts[0].playerInput).to.eq(undefined);
         expect(player.getProduction(Resources.ENERGY)).to.eq(2);
         expect(player2.getProduction(Resources.PLANTS)).to.eq(0);
 

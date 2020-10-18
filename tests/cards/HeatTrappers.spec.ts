@@ -18,7 +18,7 @@ describe("HeatTrappers", function () {
 
     it("Should be playable in solo mode", function () {
         game = new Game("foobar", [player], player);
-        player.setProduction(Resources.HEAT);
+        player.addProduction(Resources.HEAT);
 
         expect(card.canPlay(player, game)).to.eq(true);
         card.play(player, game);
@@ -30,23 +30,25 @@ describe("HeatTrappers", function () {
     });
 
     it("Should play - auto select if single target", function () {
-        player2.setProduction(Resources.HEAT, 7);
+        player2.addProduction(Resources.HEAT, 7);
         expect(card.canPlay(player, game)).to.eq(true);
         card.play(player, game);
         expect(player.getProduction(Resources.ENERGY)).to.eq(1);
 
-        expect(game.interrupts.length).to.eq(0);
+        game.interrupts[0].generatePlayerInput?.();
+        expect(game.interrupts[0].playerInput).to.eq(undefined);
         expect(player2.getProduction(Resources.HEAT)).to.eq(5);
     });
 
     it("Should play - multiple targets", function () {
-        player.setProduction(Resources.HEAT, 3);
-        player2.setProduction(Resources.HEAT, 7);
+        player.addProduction(Resources.HEAT, 3);
+        player2.addProduction(Resources.HEAT, 7);
         card.play(player, game);
 
         expect(player.getProduction(Resources.ENERGY)).to.eq(1);
 
         expect(game.interrupts.length).to.eq(1);
+        game.interrupts[0].generatePlayerInput?.();
         const selectPlayer = game.interrupts[0].playerInput as SelectPlayer;
         selectPlayer.cb(player2);
         expect(player2.getProduction(Resources.HEAT)).to.eq(5);

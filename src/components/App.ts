@@ -6,15 +6,27 @@ import { PlayerHome } from "./PlayerHome";
 import { StartScreen } from "./StartScreen";
 import { LoadGameForm } from "./LoadGameForm";
 import { DebugUI } from "./DebugUI";
+import { HelpIconology } from "./HelpIconology";
+
+import * as raw_settings from "../../assets/settings.json";
 
 export const mainAppSettings = {
     "el": "#app",
     "data": {
         screen: "empty",
         playerkey: 0,
+        settings: raw_settings,
+        isServerSideRequestInProgress: false,
         componentsVisibility: {
             "millestones_list": true,
             "awards_list": true,
+            "tags_concise": false,
+            "pinned_player_0": false,
+            "pinned_player_1": false,
+            "pinned_player_2": false,
+            "pinned_player_3": false,
+            "pinned_player_4": false,
+            "turmoil_parties": false,
         },
         game: {
             players: [],
@@ -29,12 +41,12 @@ export const mainAppSettings = {
         "player-end": GameEnd,
         "games-overview": GamesOverview,
         "debug-ui": DebugUI,
+        "help-iconology": HelpIconology,
     },
     "methods": {
         setVisibilityState: function (targetVar: string, isVisible: boolean) {
             if (isVisible === this.getVisibilityState(targetVar)) return;
             (this as any).componentsVisibility[targetVar] = isVisible;
-            (this as any).playerkey++;
         },
         getVisibilityState: function (targetVar: string): boolean {
             return (this as any).componentsVisibility[targetVar] ? true : false;
@@ -42,7 +54,7 @@ export const mainAppSettings = {
         updatePlayer: function () {
             const currentPathname: string = window.location.pathname;
             const xhr = new XMLHttpRequest();
-            let app = this as any;
+            const app = this as any;
             xhr.open(
                 "GET",
                 "/api/player" +
@@ -87,7 +99,7 @@ export const mainAppSettings = {
     },
     "mounted": function () {
         const currentPathname: string = window.location.pathname;
-        let app = this as any;
+        const app = this as any;
         if (currentPathname === "/player" || currentPathname === "/the-end") {
             app.updatePlayer();
         } else if (currentPathname === "/game") {
@@ -122,6 +134,8 @@ export const mainAppSettings = {
             app.screen = "load";
         } else if (currentPathname === "/debug-ui") {
             app.screen = "debug-ui";
+        } else if (currentPathname === "/help-iconology") {
+            app.screen = "help-iconology";
         } else {
             app.screen = "start-screen";
         }

@@ -1,16 +1,13 @@
 import { CorporationCard } from "../corporation/CorporationCard";
 import { Player } from "../../Player";
 import { Tags } from "../Tags";
-import { CardName } from '../../CardName';
+import { CardName } from "../../CardName";
 import { CardType } from "../CardType";
 import { Game } from "../../Game";
 import { LogHelper } from "../../components/LogHelper";
 import { IProjectCard } from "../IProjectCard";
 import { SelectCard } from "../../inputs/SelectCard";
 import { ICard } from "../ICard";
-import { LogMessageData } from "../../LogMessageData";
-import { LogMessageDataType } from "../../LogMessageDataType";
-import { LogMessageType } from "../../LogMessageType";
 import { OrOptions } from "../../inputs/OrOptions";
 import { SelectOption } from "../../inputs/SelectOption";
 
@@ -18,6 +15,7 @@ export class ProjectWorkshop implements CorporationCard {
     public name: CardName =  CardName.PROJECT_WORKSHOP;
     public tags: Array<Tags> = [Tags.EARTH];
     public startingMegaCredits: number = 39;
+    public cardType: CardType = CardType.CORPORATION;
 
     public play(player: Player) {
         player.steel = 1;
@@ -101,11 +99,6 @@ export class ProjectWorkshop implements CorporationCard {
     }
 
     private logCardDraw(game: Game, player: Player, drawnCard: IProjectCard) {
-        game.log(
-            LogMessageType.DEFAULT,
-            "${0} drew ${1}",
-            new LogMessageData(LogMessageDataType.PLAYER, player.id),
-            new LogMessageData(LogMessageDataType.CARD, drawnCard.name)
-        );
+        game.log("${0} drew ${1}", b => b.player(player).card(drawnCard));
     }
 }

@@ -134,7 +134,7 @@ describe("Turmoil", function () {
 
     it("Does not give Mars First bonus for World Government terraforming", function () {
         turmoil.rulingParty = new MarsFirst();
-        game.phase = Phase.ACTION;
+        game.phase = Phase.SOLAR;
 
         player.worldGovernmentTerraforming(game);
         const action = player.getWaitingFor() as OrOptions;
@@ -174,7 +174,7 @@ describe("Turmoil", function () {
         expect(releaseOfInertGases.canPlay(player, game)).to.eq(false); // needs 20 MC
         expect(jovianEmbassy.canPlay(player, game)).to.eq(false); // needs 17 MC
 
-        player.setProduction(Resources.ENERGY, 4);
+        player.addProduction(Resources.ENERGY, 4);
         player.megaCredits = 30;
         const magneticFieldGeneratorsPromo = new MagneticFieldGeneratorsPromo();
         expect(magneticFieldGeneratorsPromo.canPlay(player, game)).to.eq(false); // needs 31 MC

@@ -337,8 +337,7 @@
     "Gain 1 MC for each event EVER PLAYED by all players.": "Erhalte 1 M€ für jedes Ereignis, das jemals von Spielern ausgespielt wurde.",
 
     "Open City": "Offene Stadt",
-    "Requires 12% oxygen. Gain 2 plants. Place a City tile.": "Benötigt Sauerstoffgehalt von 12% oder mehr. Erhalte 2 Pflanzen. Platziere ein Stadtplättchen.",
-    "Decrease your Energy production 1 step and increase your MC production 4 steps.": "Senke deine Energie-Produktion um 1. Erhöhe deine M€-Produktion um 4.",
+    "Requires 12% oxygen. Gain 2 plants. Place a City tile. Decrease your Energy production 1 step and increase your MC production 4 steps.": "Benötigt Sauerstoffgehalt von 12% oder mehr. Erhalte 2 Pflanzen. Platziere ein Stadtplättchen. Senke deine Energie-Produktion um 1. Erhöhe deine M€-Produktion um 4.",
 
     "Media Group": "Mediengruppe",
     "Effect: After you play an event card, you gain 3MC.": "EFFEKT: Nachdem du eine Ereigniskarte ausgespielt hast, erhältst du 3 M€.",
@@ -548,7 +547,7 @@
     "Increase your MC production 2 steps. Place on a greenery tile ON AN AREA RESERVED FOR OCEAN, disregarding normal placement restrictions, and increase oxygen 1 step.": "Erhöhe deine M€-Produktion um 2. Platziere ein Grünflächenplättchen auf einem für Ozeane reserviertem Gebiet (ignoriere die normalen Platzierungsregeln) und erhöhe den Sauerstoffgehalt um 1%.",
     
     "Satellites": "Satelliten",
-    "Increase your MC production 1 step for each space tag your have, including this one.": "Erhöhe deine M€-Produktion um 1 je eigenes Weltraumsymbol (einschließlich dieses).",
+    "Increase your MC production 1 step for each space tag you have, including this one.": "Erhöhe deine M€-Produktion um 1 je eigenes Weltraumsymbol (einschließlich dieses).",
 
     "Noctis Farming": "Noctis-Landwirtschaft",
     "Requires -20 C or warmer. Increase your MC production 1 step and gain 2 Plants.": "Benötigt eine Temperatur von -20 °C oder wärmer. Erhöhe deine M€-Produktion um 1. Erhalte 2 Pflanzen.",

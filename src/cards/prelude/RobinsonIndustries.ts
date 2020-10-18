@@ -8,11 +8,13 @@ import { Resources } from "../../Resources";
 import { CardName } from "../../CardName";
 import { LogHelper } from "../../components/LogHelper";
 import { Game } from "../../Game";
+import { CardType } from "../CardType"
 
 export class RobinsonIndustries implements IActionCard, CorporationCard {
     public name: CardName = CardName.ROBINSON_INDUSTRIES;
     public tags: Array<Tags> = [];
     public startingMegaCredits: number = 47;
+    public cardType: CardType = CardType.CORPORATION;
     public play() {
         return undefined;
     }
@@ -45,7 +47,7 @@ export class RobinsonIndustries implements IActionCard, CorporationCard {
     }
 
     private increaseAndLogProduction(game: Game, player: Player, resource: Resources) {
-        player.setProduction(resource);
+        player.addProduction(resource);
         player.megaCredits -= 4;
         LogHelper.logGainProduction(game, player, resource);
     }
