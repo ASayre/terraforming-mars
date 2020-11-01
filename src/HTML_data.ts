@@ -11,7 +11,9 @@ export const HTML_DATA: Map<string, string> =
                 <div class="production-prefix plus"></div><div class="titanium production "></div>
             </div>
             <div class="description " style="margin-top:0px;">
-                (Requires that you have titanium production. Decrease any titanium production 1 step and increase your own 1 step.)
+                (Requires that you have titanium production. Decrease any titanium production 1 step and increase 
+
+own 1 step.)
             </div>
         </div>
 `],
@@ -3603,7 +3605,7 @@ export const HTML_DATA: Map<string, string> =
           </span>
           <div class="description " style="text-align:center ">
             <div class="resource money " style="margin-left:20px;">45</div> <div class="resource card" style="margin-left:20px"></div><div class="resource card"></div><div class="resource card"></div><br>
-              (As you first action in the game, draw 3 cards. Start with 45MC.)
+              (As your first action in the game, draw 3 cards. Start with 45MC.)
           </div>
       </div>
 `],
